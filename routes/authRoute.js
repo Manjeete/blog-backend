@@ -11,13 +11,7 @@ router.post('/signin',authController.signin);
 router.get('/signout',authController.signout);
 
 router.use(authController.requireSignin)
-//test
-router.get("/secret",(req,res) =>{
-    res.json({
-        message:"ok",
-        user:req.user
-    })
-})
+
 
 
 module.exports = router;    

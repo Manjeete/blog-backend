@@ -110,3 +110,52 @@ exports.requireSignin = expressJwt({
 //         });
 //     }
 // }
+
+
+exports.authMiddleware = async(req,res,next) =>{
+    try{
+        const user = await User.findById(req.user._id)
+        if(!user){
+            return res.status(404).json({
+                status:false,
+                msg:"User not found."
+            })
+        }
+        req.profile = user;
+        next();
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+exports.adminMiddleware = async(req,res,next) =>{
+    try{
+        const adminUser = await User.findById(req.user._id)
+        if(!adminUser){
+            return res.status(404).json({
+                status:false,
+                msg:"User not found."
+            })
+        }
+        if(adminUser.role !==1){
+            return res.status(401).json({
+                status:false,
+                msg:"You are not admin."
+            })
+        }
+        req.profile = adminUser;
+        next();
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}

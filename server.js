@@ -9,6 +9,7 @@ require('dotenv').config()
 //Routes import
 const authRouter = require("./routes/authRoute");
 const blogRouter = require("./routes/blog");
+const userRouter = require("./routes/userRoute");
 
 //app 
 const app = express()
@@ -28,6 +29,7 @@ app.use(cors())
 //Route middleware
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1",blogRouter);
+app.use("/api/v1/user",userRouter);
 
 
 
