@@ -60,7 +60,7 @@ exports.getOne = async(req,res) =>{
 exports.deleteOne = async(req,res) =>{
     try{
         const category = await Category.findOneAndDelete({slug:req.params.slug})
-        res.status(204).json({
+        res.status(200).json({
             status:true,
             msg:"Category deleted."
         })
