@@ -10,6 +10,7 @@ require('dotenv').config()
 const authRouter = require("./routes/authRoute");
 const blogRouter = require("./routes/blog");
 const userRouter = require("./routes/userRoute");
+const categoryRouter = require("./routes/categoryRoute");
 
 //app 
 const app = express()
@@ -30,6 +31,7 @@ app.use(cors())
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1",blogRouter);
 app.use("/api/v1/user",userRouter);
+app.use("/api/v1/category",categoryRouter);
 
 
 
