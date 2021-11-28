@@ -11,6 +11,7 @@ const authRouter = require("./routes/authRoute");
 const blogRouter = require("./routes/blog");
 const userRouter = require("./routes/userRoute");
 const categoryRouter = require("./routes/categoryRoute");
+const tagRouter = require("./routes/tagRoute");
 
 //app 
 const app = express()
@@ -32,6 +33,7 @@ app.use("/api/v1/auth",authRouter);
 app.use("/api/v1",blogRouter);
 app.use("/api/v1/user",userRouter);
 app.use("/api/v1/category",categoryRouter);
+app.use("/api/v1/tag",tagRouter);
 
 
 
