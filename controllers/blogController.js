@@ -4,6 +4,7 @@ const _ = require('lodash')
 const {errorHandler} = require("../heplers/dbErrorHandler");
 const {stripHtml} = require("string-strip-html")
 const fs = require('fs')
+const {smartTrim} = require("../heplers/blog");
 
 //models
 const Blog = require("../models/blogModel");
@@ -28,10 +29,14 @@ exports.createBlog = (req,res) =>{
             let blog = new Blog()
             blog.title = title
             blog.body=body
+            blog.excerpt = smartTrim(body,320,' ',' ...');
             blog.slug=slugify(title).toLowerCase()
             blog.mtitle = `${title} | Blog`
             blog.mdesc = stripHtml(body.substring(0,160)).result;
             blog.postedBy = req.user._id
+
+            let listOfCategories = categories || categories.split(',')
+            let listOfTags = tags || tags.split(',')
 
             if(files.photo){
                 if(files.photo.size > 1000000){
@@ -50,9 +55,28 @@ exports.createBlog = (req,res) =>{
                         msg:err
                     })
                 }
-                return res.status(201).json({
-                    status:true,
-                    blog:result
+                Blog.findByIdAndUpdate(result._id,{$push:{categories:listOfCategories}},{new:true}).exec((err,result) =>{
+                    if(err){
+                        return res.status(400).json({
+                            status:false,
+                            msg:err
+                        })
+                    }else{
+                        Blog.findByIdAndUpdate(result._id,{$push:{tags:listOfTags}},{new:true}).exec((err,result) =>{
+                            if(err){
+                                return res.status(400).json({
+                                    status:false,
+                                    msg:err
+                                })
+                            }else{
+                                res.status(201).json({
+                                    status:true,
+                                    blog:result
+                                })
+
+                            }
+                        })
+                    }
                 })
             })
         })
