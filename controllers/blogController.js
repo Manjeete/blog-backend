@@ -115,6 +115,29 @@ exports.getListBlogs = async(req,res) =>{
 
 exports.getListBlogsCatsTags = async(req,res) =>{
     try{
+        let limit = req.body.limit ? parseInt(req.body.limit):10;
+        let skip = req.body.skip ? parseInt(req.body.skip):0;
+
+        let blogs = await Blog.find({})
+            .populate('categories','_id name slug')
+            .populate('tags','_id name slug')
+            .populate('postedBy','_id name username profile')
+            .sort({createdAt:-1})
+            .skip(skip)
+            .limit(limit)
+            .select('_id title slug excerpt categories tags postedBy createdAt updatedAt');
+
+        let categories = await Category.find({});
+        let tags = await Tag.find({})
+
+        res.status(200).json({
+            status:true,
+            results:blogs.length,
+            blogs,
+            categories,
+            tags
+        })
+
 
     }catch(err){
         console.log(err)
@@ -127,7 +150,16 @@ exports.getListBlogsCatsTags = async(req,res) =>{
 
 exports.getOneBlog = async(req,res) =>{
     try{
-
+        let blog = await Blog.findOne({slug:req.params.slug.toLowerCase()})
+            .populate('categories','_id name slug')
+            .populate('tags','_id name slug')
+            .populate('postedBy','_id name username profile')
+            .select('_id title body slug mtitle mdesc categories tags postedBy createdAt updatedAt');
+        
+        res.status(200).json({
+            status:true,
+            blog
+        })
     }catch(err){
         console.log(err)
         return res.status(500).json({
@@ -139,6 +171,11 @@ exports.getOneBlog = async(req,res) =>{
 
 exports.deleteOneBlog = async(req,res) =>{
     try{
+        let blog = await Blog.findOneAndDelete({slug:req.params.slug.toLowerCase()})
+        res.status(200).json({
+            status:true,
+            msg:"Blog deleted"
+        })
 
     }catch(err){
         console.log(err)
