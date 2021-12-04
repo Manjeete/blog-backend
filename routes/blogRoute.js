@@ -12,4 +12,20 @@ router
         blogController.createBlog
     )
 
+router.get("/",blogController.getListBlogs)
+router.post("/blogs-categories-tags",blogController.getListBlogsCatsTags)
+router
+    .route("/:slug")
+    .get(blogController.getOneBlog)
+    .delete(
+        authController.requireSignin,
+        authController.adminMiddleware,
+        blogController.deleteOneBlog
+    )
+    .patch(
+        authController.requireSignin,
+        authController.adminMiddleware,
+        blogController.updateOneBlog
+    )
+
 module.exports = router;

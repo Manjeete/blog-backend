@@ -12,7 +12,7 @@ const Category = require("../models/categoryModel");
 const Tag = require("../models/tagModel");
 
 //creating blog
-exports.createBlog = (req,res) =>{
+exports.createBlog = async(req,res) =>{
     try{
         let form = new formidable.IncomingForm()
         form.keepExtensions = true
@@ -35,12 +35,12 @@ exports.createBlog = (req,res) =>{
             blog.mdesc = stripHtml(body.substring(0,160)).result;
             blog.postedBy = req.user._id
 
-            let listOfCategories = categories || categories.split(',')
-            let listOfTags = tags || tags.split(',')
+            let listOfCategories = categories.split(',')
+            let listOfTags = tags.split(',')
 
             if(files.photo){
                 if(files.photo.size > 1000000){
-                    return res.statsu(400).json({
+                    return res.status(400).json({
                         status:false,
                         msg:'Photo can not be greator than 1MB size.'
                     });
@@ -80,6 +80,78 @@ exports.createBlog = (req,res) =>{
                 })
             })
         })
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+
+exports.getListBlogs = async(req,res) =>{
+    try{
+        const blog = await Blog.find({})
+                        .populate('categories','_id name slug')
+                        .populate('tags','_id name slug')
+                        .populate('postedBy','_id name username')
+                        .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
+        res.status(200).json({
+            status:true,
+            results:blog.length,
+            blog
+        })
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+
+exports.getListBlogsCatsTags = async(req,res) =>{
+    try{
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+exports.getOneBlog = async(req,res) =>{
+    try{
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+exports.deleteOneBlog = async(req,res) =>{
+    try{
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+
+exports.updateOneBlog = async(req,res) =>{
+    try{
 
     }catch(err){
         console.log(err)
