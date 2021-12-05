@@ -39,7 +39,7 @@ exports.createBlog = async(req,res) =>{
             let listOfTags = tags.split(',')
 
             if(files.photo){
-                if(files.photo.size > 1000000){
+                if(files.photo.size > 10000000){
                     return res.status(400).json({
                         status:false,
                         msg:'Photo can not be greator than 1MB size.'
@@ -186,15 +186,70 @@ exports.deleteOneBlog = async(req,res) =>{
     }
 }
 
-
+//updating blog
 exports.updateOneBlog = async(req,res) =>{
-    try{
+    const slug = req.params.slug.toLowerCase();
 
-    }catch(err){
-        console.log(err)
-        return res.status(500).json({
-            status:false,
-            msg:err.message
+    Blog.findOne({slug}).exec((err,oldBlog) =>{
+        if(err){
+            return res.status(400).json({
+                status:false,
+                msg:errorHandler(err)
+            })
+        }
+        let form = new formidable.IncomingForm()
+        form.keepExtensions = true
+
+        form.parse(req,(err,fields,files)=>{
+            if(err){
+                return res.status(400).json({
+                    status:false,
+                    msg:err.message
+                })
+            }
+    
+            let slugBeforeMerge = oldBlog.slug
+            oldBlog = _.merge(oldBlog,fields)
+            oldBlog.slug = slugBeforeMerge
+
+            const {body,mdesc,categories,tags} = fields
+
+            if(body){
+                oldBlog.excerpt = smartTrim(body,320,' ',' ...')
+                oldBlog.mdesc = stripHtml(body.substring(0,160));
+            }
+
+            if(categories){
+                oldBlog.categories = categories.split(",")
+            }
+
+            if(tags){
+                oldBlog.tags = tags.split(",")
+            }
+    
+            if(files.photo){
+                if(files.photo.size > 10000000){
+                    return res.status(400).json({
+                        status:false,
+                        msg:'Photo can not be greator than 1MB size.'
+                    });
+                }
+                oldBlog.photo.data = fs.readFileSync(files.photo.filepath)
+                oldBlog.photo.contentType = files.photo.type
+            }
+            oldBlog.save((err,result) =>{
+                if(err){
+                    return res.status(400).json({
+                        status:false,
+                        msg:err
+                    })
+                }
+                res.status(200).json({
+                    status:true,
+                    blog:result
+                })
+            })
         })
-    }
+
+    })
 }
