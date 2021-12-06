@@ -28,4 +28,7 @@ router
         blogController.updateOneBlog
     )
 
+router.get("/photo/:slug",blogController.blogPhoto)
+router.post("/related",blogController.listRelatedBlogs)
+
 module.exports = router;

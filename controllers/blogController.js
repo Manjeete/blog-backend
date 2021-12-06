@@ -244,6 +244,7 @@ exports.updateOneBlog = async(req,res) =>{
                         msg:err
                     })
                 }
+                result.photo = undefined
                 res.status(200).json({
                     status:true,
                     blog:result
@@ -251,5 +252,33 @@ exports.updateOneBlog = async(req,res) =>{
             })
         })
 
+    })
+}
+
+//get photo of blog
+exports.blogPhoto = async(req,res) =>{
+        const slug = req.params.slug.toLowerCase()
+
+        const blog = await Blog.findOne({slug}).select('photo');
+        res.set('Content-Type',blog.photo.contentType)
+
+        res.send(blog.photo.data)
+        
+}
+
+
+//related blogs
+exports.listRelatedBlogs = async(req,res) =>{
+    let limit = req.body.limit ? parseInt(req.body.limit):3
+
+    const {_id,categories} = req.body.blog
+
+    const blogs = await Blog.find({_id:{$ne:_id},categories:{$in:categories}}).limit(limit)
+        .populate('postedBy','_id name profile')
+        .select('title slug excerpt postedBy createdAt updatedAt')
+
+    res.status(200).json({
+        status:true,
+        blogs
     })
 }
