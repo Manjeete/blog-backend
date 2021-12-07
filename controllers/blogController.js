@@ -216,7 +216,7 @@ exports.updateOneBlog = async(req,res) =>{
 
             if(body){
                 oldBlog.excerpt = smartTrim(body,320,' ',' ...')
-                oldBlog.mdesc = stripHtml(body.substring(0,160));
+                oldBlog.mdesc = stripHtml(body.substring(0,160)).result;
             }
 
             if(categories){
@@ -282,3 +282,5 @@ exports.listRelatedBlogs = async(req,res) =>{
         blogs
     })
 }
+
+//
