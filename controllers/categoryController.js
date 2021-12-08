@@ -1,6 +1,7 @@
 const { default: slugify } = require("slugify");
 const Category = require("../models/categoryModel");
 const {errorHandler} = require("../heplers/dbErrorHandler");
+const Blog = require("../models/blogModel");
 
 //create category
 exports.create = async(req,res) =>{
@@ -43,9 +44,15 @@ exports.getOne = async(req,res) =>{
                 msg:"Category not found with thid slug"
             })
         }
+        let blogs = await Blog.find({categories:category})
+                    .populate('categories','_id name slug')
+                    .populate('tags','_id name slug')
+                    .populate('postedBy','_id name')
+                    .select('_id title slug excerpt categories postedBy tags createdAt updatedAt')
         res.status(200).json({
             status:true,
-            category
+            category,
+            blogs
         })
     }catch(err){
         console.log(err)
