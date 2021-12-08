@@ -283,4 +283,18 @@ exports.listRelatedBlogs = async(req,res) =>{
     })
 }
 
-//
+//search blgos
+exports.listSearch = async(req,res) =>{
+    console.log(req.query)
+    const {search} = req.query
+    console.log(search)
+    const blogs = await Blog.find({
+        $or:[{title:{$regex:search,$options:'i'}},{body:{$regex:search,$options:'i'}}]
+    }).select('-photo');
+
+    res.status(200).json({
+        status:true,
+        results:blogs.length,
+        blogs
+    })
+}

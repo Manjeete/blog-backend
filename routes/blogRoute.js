@@ -11,6 +11,7 @@ router
         authController.adminMiddleware,
         blogController.createBlog
     )
+router.get("/search",blogController.listSearch)
 
 router.get("/",blogController.getListBlogs)
 router.post("/blogs-categories-tags",blogController.getListBlogsCatsTags)
