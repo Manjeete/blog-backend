@@ -65,6 +65,13 @@ exports.updateProfile = (req,res) =>{
         let user = req.profile
         user = _.extend(user,fields)
 
+        if(fields.password && fields.password.length < 6){
+            return res.status(400).json({
+                status:false,
+                msg:'Password should be min 6 characters long.'
+            })
+        }
+
         if(files.photo){
             if(files.photo.size > 10000000){
                 return res.status(400).json({
@@ -86,6 +93,7 @@ exports.updateProfile = (req,res) =>{
             user.hash_password = undefined
             res.status(200).json({
                 status:true,
+                msg:"Profile updated",
                 profile:user
             })
         })
@@ -96,7 +104,7 @@ exports.updateProfile = (req,res) =>{
 //user photo
 exports.userPhoto = (req,res) =>{
     const username = req.params.username;
-    User.findOne({username}).exce((err,user) =>{
+    User.findOne({username}).exec((err,user) =>{
         if(err || !user){
             return res.status(400).json({
                 status:false,
