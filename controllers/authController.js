@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const shortId = require("shortid");
 const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
+const Blog = require("../models/blogModel");
 
 //user signup
 exports.signup = async(req,res) =>{
@@ -158,4 +159,27 @@ exports.adminMiddleware = async(req,res,next) =>{
             msg:err.message
         })
     }
+}
+
+
+exports.canUpdateDeleteBlog = async (req,res, next) =>{
+    const slug = req.params.slug.toLowerCase()
+
+    let blog = await Blog.findOne({slug})
+    if(!blog){
+        return res.status(404).json({
+            status:false,
+            msg:"Blog not found."
+        })
+    }
+
+    let authorizedUser = blog.postedBy._id.toString() === req.profile._id.toString()
+
+    if(!authorizedUser){
+        return res.status(400).json({
+            status:false,
+            msg:"You are not authorized"
+        })
+    }
+    next();
 }

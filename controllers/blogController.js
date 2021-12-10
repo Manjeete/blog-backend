@@ -10,6 +10,7 @@ const {smartTrim} = require("../heplers/blog");
 const Blog = require("../models/blogModel");
 const Category = require("../models/categoryModel");
 const Tag = require("../models/tagModel");
+const User = require("../models/userModel");
 
 //creating blog
 exports.createBlog = async(req,res) =>{
@@ -296,5 +297,29 @@ exports.listSearch = async(req,res) =>{
         status:true,
         results:blogs.length,
         blogs
+    })
+}
+
+
+exports.listByUser = async (req,res) =>{
+    let user = await User.findOne({username:req.params.username})
+    console.log(user)
+    if(!user){
+        return res.status(404).json({
+            status:false,
+            msg:"User not found."
+        })
+    }
+    let userId = user._id
+
+    let blog = await Blog.find({postedBy:userId})
+                .populate('categories','_id name slug')
+                .populate('tags','_id name slug')
+                .populate('postedBy','_id name username')
+                .select('_id title slug posteBy createdAt updatedAt')
+
+    res.status(200).json({
+        status:true,
+        blog
     })
 }
