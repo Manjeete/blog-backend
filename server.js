@@ -12,6 +12,7 @@ const userRouter = require("./routes/userRoute");
 const categoryRouter = require("./routes/categoryRoute");
 const tagRouter = require("./routes/tagRoute");
 const blogRouter = require("./routes/blogRoute");
+const formRouter = require("./routes/formRoute");
 
 //app 
 const app = express()
@@ -34,6 +35,7 @@ app.use("/api/v1/blog",blogRouter);
 app.use("/api/v1/user",userRouter);
 app.use("/api/v1/category",categoryRouter);
 app.use("/api/v1/tag",tagRouter);
+app.use("/api/v1",formRouter);
 
 
 
