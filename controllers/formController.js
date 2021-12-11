@@ -24,7 +24,8 @@ exports.contactForm = async(req,res) =>{
 
         await sgMail.send(emailData).then(sent =>{
             return res.json({
-                success:true
+                success:true,
+                status:true
             })
         })
         
@@ -46,7 +47,7 @@ exports.contactBlogAuthorForm = async(req,res) =>{
         let maillist = [authorEmail,process.env.EMAIL_TO]
     
         const emailData = {
-            to:[maillist],
+            to:process.env.EMAIL_TO,
             from:"manjeetkr2017@gmail.com",
             subject:`Contact form email`,
             text:`Email recieved from contact form \n Sender name:${name} \n Sender email:${email} \n Sender message:${message}`,
@@ -63,7 +64,8 @@ exports.contactBlogAuthorForm = async(req,res) =>{
 
         await sgMail.send(emailData).then(sent =>{
             return res.json({
-                success:true
+                success:true,
+                status:true
             })
         })
         
