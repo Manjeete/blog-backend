@@ -8,6 +8,8 @@ const {contactFormValidator} = require("../validators/form");
 const router = express.Router();
 
 
-router.post('/',contactFormValidator,runValidation,formController.contactForm);
+router.post('/contact',contactFormValidator,runValidation,formController.contactForm);
+router.post('/contact-blog-author',contactFormValidator,runValidation,formController.contactBlogAuthorForm);
+
 
 module.exports=router;
