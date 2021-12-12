@@ -21,6 +21,8 @@ const app = express()
 mongoose.connect(process.env.DB_URI,{useNewUrlParser:true})
 .then(() => console.log('Database connected successfully...'))
 
+console.log(process.env.DB_URI)
+
 //middlewares
 app.use(morgan('dev'))
 app.use(bodyParser.json())
