@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt')
 const Blog = require("../models/blogModel");
 
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 //user signup
 exports.signup = async(req,res) =>{
     try{
@@ -183,3 +186,49 @@ exports.canUpdateDeleteBlog = async (req,res, next) =>{
     }
     next();
 }
+
+//forgot password
+exports.forgotPassword = async(req,res) =>{
+    try{
+        const {email} = req.body
+
+        let user = await User.findOne({email});
+        if(!user){
+            return res.status(404).json({
+                status:false,
+                msg:"User not found."
+            })
+        }
+
+        const token = jwt.sign({_id:user._id},process.env.JWT_RESET_PASSWORD,{expiresIn:'10m'})
+
+        const emailData = {
+            to:process.env.EMAIL_TO,
+            from:"manjeetkr2017@gmail.com",
+            subject:`Contact form email`,
+            html:`
+                <p>Please use the following link to reset your password.</p>
+                <p>${process.env.CLIENT_URL}/auth/password/reset/${token}</p>
+                <hr />
+                <p>This email may contain sensetive information</p>
+                <p>https://manjeet.com</p>
+            `
+        };
+
+        let userUpdate = await User.findByIdAndUpdate(user._id,{resetPasswordLink:token},{new:true})
+
+        await sgMail.send(emailData)
+        return res.status(200).json({
+            status:true,
+            msg:"Email has been sent to ${email}. Follow the instructions to reset your password. Link expires in 10 min."
+        })
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
