@@ -29,6 +29,13 @@ app.use(cookieParser())
 //cors
 app.use(cors())
 
+app.get("/",(req,res) =>{
+    res.status(200).json({
+        status:true,
+        msg:"Server is running."
+    })
+})
+
 //Route middleware
 app.use("/api/v1/auth",authRouter);
 app.use("/api/v1/blog",blogRouter);
