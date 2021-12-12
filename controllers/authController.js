@@ -220,8 +220,32 @@ exports.forgotPassword = async(req,res) =>{
         await sgMail.send(emailData)
         return res.status(200).json({
             status:true,
-            msg:"Email has been sent to ${email}. Follow the instructions to reset your password. Link expires in 10 min."
+            msg:`Email has been sent to ${email}. Follow the instructions to reset your password. Link expires in 10 min.`
         })
+
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            status:false,
+            msg:err.message
+        })
+    }
+}
+
+exports.resetPassword = async(req,res) =>{
+    try{
+        const {resetPasswordLink,newPassword} = req.body
+
+        if(resetPasswordLink){
+            let check = jwt.verify(resetPasswordLink,process.env.JWT_RESET_PASSWORD);
+            if(check){
+                let user = await User.findOneAndUpdate({resetPasswordLink},{password:newPassword,resetPasswordLink:''},{new:true})
+                return res.status(200).json({
+                    status:true,
+                    msg:"Password updated successfully."
+                })
+            }
+        }
 
     }catch(err){
         console.log(err)

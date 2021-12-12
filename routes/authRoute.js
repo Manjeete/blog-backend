@@ -10,7 +10,7 @@ router.post('/signup',userSignupValidator,runValidation,authController.signup);
 router.post('/signin',authController.signin);
 router.get('/signout',authController.signout);
 router.patch('/forgot-password',forgotPasswordValidator,runValidation,authController.forgotPassword)
-// router.patch('/reset-password',resetPasswordValidator,runValidation,authController.resetPassword)
+router.patch('/reset-password',resetPasswordValidator,runValidation,authController.resetPassword)
 
 
 router.use(authController.requireSignin)
